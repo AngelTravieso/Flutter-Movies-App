@@ -57,8 +57,9 @@ class _MovieSliderState extends State<MovieSlider> {
               controller: scrollController,
               scrollDirection: Axis.horizontal,
               itemCount: widget.popularMovies.length,
-              itemBuilder: (_, int index) =>
-                  _MoviePoster(widget.popularMovies[index]),
+              itemBuilder: (_, int index) => _MoviePoster(
+                  widget.popularMovies[index],
+                  '${widget.title}-$index-${widget.popularMovies[index].id}'),
             ),
           ),
         ],
@@ -69,10 +70,13 @@ class _MovieSliderState extends State<MovieSlider> {
 
 class _MoviePoster extends StatelessWidget {
   final Movie popularMovie;
-  const _MoviePoster(this.popularMovie);
+  final String heroId;
+  const _MoviePoster(this.popularMovie, this.heroId);
 
   @override
   Widget build(BuildContext context) {
+    popularMovie.heroId = heroId;
+
     return Container(
       width: 130.0,
       height: 190.0,
@@ -81,15 +85,18 @@ class _MoviePoster extends StatelessWidget {
         children: <Widget>[
           GestureDetector(
             onTap: () => Navigator.pushNamed(context, 'details',
-                arguments: 'movie-instance'),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: FadeInImage(
-                  placeholder: AssetImage('assets/no-image.jpg'),
-                  image: NetworkImage(popularMovie.fullPosterImg),
-                  width: 130.0,
-                  height: 190.0,
-                  fit: BoxFit.cover),
+                arguments: popularMovie),
+            child: Hero(
+              tag: popularMovie.heroId!,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: FadeInImage(
+                    placeholder: AssetImage('assets/no-image.jpg'),
+                    image: NetworkImage(popularMovie.fullPosterImg),
+                    width: 130.0,
+                    height: 190.0,
+                    fit: BoxFit.cover),
+              ),
             ),
           ),
           SizedBox(height: 5),
